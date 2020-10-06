@@ -6,6 +6,7 @@ setup(
     py_modules=['tracker'],
     install_requires=[
         'Click',
+        'tabulate',
     ],
     entry_points='''
         [console_scripts]

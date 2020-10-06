@@ -9,8 +9,6 @@ def hour():
     """Manages the hour commands"""
     pass
 
-
-
 # Show
 @hour.command()
 @click.option('--prev', is_flag=True)
