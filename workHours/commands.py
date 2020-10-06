@@ -1,5 +1,6 @@
 import click
 from tabulate import tabulate
+#import uuid
 
 from workHours.models import Hour
 from workHours.services import HourService
@@ -11,6 +12,7 @@ def hour():
 
 # Show
 @hour.command()
+@click.option('--all', is_flag=True)
 @click.option('--prev', is_flag=True)
 @click.option('--custom', is_flag=True)
 @click.option(
@@ -25,7 +27,7 @@ def hour():
 )
 @click.option('--complete', is_flag=True)
 @click.pass_context
-def show(ctx, prev, custom, year, week, complete):
+def show(ctx, all, prev, custom, year, week, complete):
     """
         Shows all hours
             default: Current week's hours
@@ -37,35 +39,42 @@ def show(ctx, prev, custom, year, week, complete):
             if --year and/or --week are used, --custom is skipped
     """
     # Manage options
-    params = {'prev': False, 'week': None, 'year':None}
-    if prev:
-        params['prev'] = True
-    elif year or week:
-        if year and not week:
-            click.echo('Error: Year parameter recieved, week paramater also needed...')
-            click.echo('\tTo send week parameter with year use <tracker hours show -y [n] -w [m]>')
-            ctx.abort()
-        else:
-            params['week'] = week
-            params['year'] = year
-    elif custom:
-        params['week'] = click.prompt('Which week? ', type=int, default=None)
-        params['year'] = click.prompt('Which year? ', type=int, default=None)
+    params = {'all': False, 'prev': False, 'week': None, 'year':None}
+    if all:
+        params['all'] = True
+    else:
+        if prev:
+            params['prev'] = True
+        elif year or week:
+            if year and not week:
+                click.echo('Error: Year parameter recieved, week paramater also needed...')
+                click.echo('\tTo send week parameter with year use <tracker hours show -y [n] -w [m]>')
+                ctx.abort()
+            else:
+                params['week'] = week
+                params['year'] = year
+        elif custom:
+            params['week'] = click.prompt('Which week? ', type=int, default=None)
+            params['year'] = click.prompt('Which year? ', type=int, default=None)
     
     
     hour_service = HourService(ctx.obj['work_hours_table'])
     hour_table = hour_service.get_hours(**params)
 
-    #Normal and short prints
-    if complete:
-        print(tabulate(hour_table, headers=Hour.schema()))
-    else: 
-        hour_table = map( 
-                lambda x: [x[0][:8]] + x[1:-1], # Shotens id and eliminates date_created
-                hour_table)
-        hour_table = list(hour_table)
-        print(tabulate(hour_table, headers=Hour.schema()[:-1]))
-
+    if hour_table:
+        #Normal and short prints
+        if complete:
+            print(tabulate(hour_table, headers=Hour.schema()))
+        else: 
+            hour_table = map( 
+                    lambda x: [x[0][:8]] + x[1:-1], # Shotens id and eliminates date_created
+                    hour_table)
+            hour_table = list(hour_table)
+            print(tabulate(hour_table, headers=Hour.schema()[:-1]))
+    else:
+        print('-'*50 + '\nThere\'s no record for the date range requested')
+        
+    
 
 
 #Add hour
@@ -91,9 +100,9 @@ def show(ctx, prev, custom, year, week, complete):
 @click.pass_context
 def add(ctx, year, week, day, hours, minutes, description):
     """
-        Adds a new hour for a day
-            default: Adds on current day
-            with options: 
+        Adds a new hour for a day\n
+            default: Adds on current day\n
+            with options:\n 
                 --week=n, --day=m, --year=j: to insert as
     """
     
@@ -111,13 +120,16 @@ def add(ctx, year, week, day, hours, minutes, description):
     
 #delete
 @hour.command()
+@click.argument('record_id', type=str)
 @click.pass_context
-def delete(ctx):
+def delete(ctx, record_id):
     """
         Delete an our based on argument id
     """
-    #Usar un cheker de id con regex
-    pass
+    # hour_service = HourService(ctx.obj['work_hours_table'])
+
+    # #Verificamos si el id el correcto
+    # hour_list = hour_service.get_hours()
 
 #update
 @hour.command()

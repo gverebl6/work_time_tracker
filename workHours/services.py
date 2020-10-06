@@ -16,16 +16,18 @@ class HourService:
             writer = csv.DictWriter(f, fieldnames=Hour.schema())
             writer.writerow(work_hour.to_dict())
 
+
+
     #Returns the table's content
-    def get_hours(self, prev=None, year=None, week=None):
+    def get_hours(self, all=None, prev=None, year=None, week=None):
         
         current_time = self.get_current_time()
         
+        #Condition evaluation
         filters = {
             'week' : current_time['week'],
             'year' : current_time['year']
         }
-        #print(type(filters['week']))
         if prev: 
             if filters['week'] == 0:
                 filters['week'] = 52
@@ -36,8 +38,9 @@ class HourService:
             filters['week'] = week
             if year:
                 filters['year'] = year
-            
 
+
+        # Data retrieved
         with open(self.table, mode='r') as f:
             data_dict = csv.DictReader(f, fieldnames=Hour.schema())
             data = []
@@ -45,12 +48,16 @@ class HourService:
             for elem in data_dict:
                 data.append(list(elem.values()))
         
-        return data
-
         
-        
-        
-                
+        #Data filtering 
+        if all:
+            return data
+        else: 
+            return [
+                row for row in data 
+                if row[1] == str(filters['year'] )
+                and row[2] == str(filters['week'])
+            ]
             
     
     @staticmethod
