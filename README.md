@@ -39,6 +39,9 @@ This is used to track some work related data through a CLI interface.
 
 This service is used to manage the hours worked by the user. With the following commands
 
+<br><br>
+#### Show command
+
 `show`: Shows the table of registered hours 
 
 default (no options or flags): Shows the current week's hours in short version
@@ -56,6 +59,9 @@ default (no options or flags): Shows the current week's hours in short version
 `--week, -w`: To choose the week to show. If -y is not used with this option, the selected week is from the current year.
 
 `--year, -y`: To choose the year to show. Needs -w in order to work
+
+<br><br>
+#### Add command
 
 `add`: Add a new record of hours worked in a day.
 
@@ -77,11 +83,18 @@ description: A description of work performed in that time.
 
 `--day, -d`: Which day to add on
 
+<br><br>
+#### Delete command
+
 `delete`: Deletes a record from the database based on a record id
 
 **argument**
 
 hour_id: Id of the record in the database, either short or complete version 
+
+
+<br><br>
+#### Update command
 
 `update`: Updates a record in order to change incorrect data on the record
 
@@ -103,6 +116,9 @@ hour_id: Id of the record in the database, either short or complete version
 
 `--description, -l`: Description to update to. 
 
+<br><br>
+#### Count command
+
 `count`: Generates a report with the worked hours reported for a specific range of weeks
 
 **options:**
@@ -114,5 +130,8 @@ hour_id: Id of the record in the database, either short or complete version
 `--start, -i`: A specific week to start counting (If no stop, stop=current week)
 
 `--stop, -f`: The last week to count to (If no start, start = first week of year)
+
+<br><br>
+#### Current command
 
 `current`: Displays current year, week and day number to help users to add new hours
